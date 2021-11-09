@@ -1,0 +1,20 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | Gestion de la pratique professionnelle{% endblock %}
+
+{% block extrastyle %}<link rel="stylesheet" type="text/css" href="{% static 'css/stages.css' %}">{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">École Pierre-Coullery<br>Gestion de la pratique professionnelle</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block messages %}
+    {% if messages %}
+    <ul class="messagelist">{% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|linebreaksbr|capfirst }}</li>
+    {% endfor %}</ul>
+    {% endif %}
+{% endblock messages %}

@@ -1,0 +1,109 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  div#period_choice { margin: 0 auto; text-align: center; width: 60%; padding: 0.5em; margin-bottom: 1em; background-color: #EDF3FE;}
+  select#section_select { width: 8em; margin-right: 2em; }
+  select#period_select { width: 16em; }
+
+  div#student_choice { float: left; width: 18%; }
+  select#student_select, select#student_filter { width: 100%; height: auto; }
+
+  div#corp_choice { float: right; width: 18%; }
+  select#corp_select, select#corp_filter { width: 100%; height: auto; }
+  select#corp_select option.priority { font-weight: bold; }
+
+  div#student_detail { float:left; width: 40%; margin: 1em; padding: 0.5em; border: 3px solid red; min-height: 4em; border-radius: 8px; }
+  div#previous_stages { background-color: #EEE; border-radius: 4px; }
+  ul#previous_stages_list { display: none; padding-left: 1.5em;}
+  span.under_17 { color: red; }
+
+  div#corp_detail { float:right; width: 40%; margin: 1em; padding: 0.5em; border: 3px solid red; min-height: 4em; border-radius: 8px; }
+  div#corp_total, div#student_total { font-style: italic; color: gray; }
+  div.filled { border-color: green !important; }
+
+  div#training_form { text-align: center; }
+  div#buttons_div { margin-top: 1em; }
+  input#valid_training { display: none; }
+
+  div#trainings { clear: both; padding-top: 1em; }
+  input#export { display: none; margin-left: 2em; }
+
+  .missing { font-style: italic; color: red; }
+</style>
+{% endblock %}
+
+{% block extrahead %}
+  <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'admin/js/jquery.init.js' %}"></script>
+  <script type="text/javascript" src="{% static 'admin/js/admin/RelatedObjectLookups.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/attribution.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/jquery.cookie.js' %}"></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; Attributions
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="period_choice">
+  <form>
+    <label for="section_select">Filière:</label>
+    <select id="section_select">{% for sect in sections %}<option value="{{ sect.id }}">{{ sect.name }}</option>{% endfor %}</select>
+    <label for="period_select">Période:</label>
+    <select id="period_select"></select>
+  </form>
+</div>
+
+<div id="student_choice">
+  <form>
+    <select id="student_filter" size="1"></select>
+    <select id="student_select" size="15"></select>
+    <div id="student_total"></div>
+  </form>
+</div>
+
+<div id="corp_choice">
+  <form>
+    <select id="corp_filter" size="1"></select>
+    <select id="corp_select" size="15"></select>
+    <div id="corp_total"></div>
+  </form>
+</div>
+
+<div id="training_main">
+
+  <div style="overflow: auto;">
+    <div id="student_detail"></div>
+    <div id="corp_detail"></div>
+  </div>
+  <div id="training_form">
+    <form>{% csrf_token %}
+    <div id="referent_choice"><label for="referent_select">Référent école:</label>
+      <select id="referent_select"><option value="">-------</option>
+        {% for ref in referents %}<option value="{{ ref.id }}">{{ ref }} ({{ ref.num_refs }})</option>{% endfor %}</select>
+    </div>
+    <div id="contact_choice"><label for="contact_select">Contact institution:</label>
+      <select id="contact_select"><option value="">-------</option></select>
+    </div>
+    <div id="buttons_div"><input id="valid_training" type="button" value="Valider cette pratique professionnelle"></div>
+    </form>
+  </div>
+</div>
+
+<div id="trainings">
+  <h3>Pratiques professionnelles planifiées pour la période choisie</h3>
+  <ul id="training_list">-
+  </ul>
+  <form id="list_export" method="get" action="{% url 'stages_export' %}">{% csrf_token %}
+    <input id="period" name="period" type="hidden" value="">
+    <input id="non_attr" name="non_attr" type="hidden" value="0">
+    <input id="export" type="button" value="Exporter la liste">
+    <input id="export_non_attr" type="button" value="Exporter la liste des places de PP non attribuées">
+  </form>
+</div>
+{% endblock %}
